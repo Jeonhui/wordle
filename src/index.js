@@ -5,13 +5,12 @@ import App from './App';
 import {Provider} from "react-redux";
 import {createStore} from "@reduxjs/toolkit";
 
-const reducer = (state = "", action)=>{
-    if (action.type === "입력"){
-        state="a"
-        return state
-    }else if(action.type === "제출"){
+const reducer = (state= [], action)=>{
+    if (action.type ==="send_input"){
+        state.push(action.text);
+        console.log(state);
     }
-    return state
+    return state;
 }
 let store = createStore(reducer)
 

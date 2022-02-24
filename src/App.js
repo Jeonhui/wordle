@@ -1,15 +1,13 @@
 import './App.css';
-import {useDispatch, useSelector} from "react-redux";
 import Inputs from "./components/Inputs";
+import Log from "./components/Log";
 
 function App() {
-
-    const value = useSelector((state) => state)
-    const dispatch = useDispatch()
-
     return (
         <div className="App">
+            <div>
             <Inputs/>
+            </div>
         </div>
     );
 }
