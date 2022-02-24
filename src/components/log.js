@@ -1,7 +1,9 @@
-import './App.css';
 import {useDispatch, useSelector} from "react-redux";
+import styled from "styled-components";
 
-function App() {
+
+
+function Log() {
 
     const value = useSelector((state) => state)
     const dispatch = useDispatch()
@@ -16,4 +18,4 @@ function App() {
     );
 }
 
-export default App;
+export default Log;
