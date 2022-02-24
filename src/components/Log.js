@@ -1,10 +1,7 @@
 import {useDispatch, useSelector} from "react-redux";
 import styled from "styled-components";
 
-
-
 function Log() {
-
     const value = useSelector((state) => state)
     const dispatch = useDispatch()
 

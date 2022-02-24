@@ -1,5 +1,6 @@
 import './App.css';
 import {useDispatch, useSelector} from "react-redux";
+import Inputs from "./components/Inputs";
 
 function App() {
 
@@ -8,10 +9,7 @@ function App() {
 
     return (
         <div className="App">
-            <button onClick={() => {
-                dispatch({type: '입력'})
-            }}>제출</button>
-            <div>값: {value}</div>
+            <Inputs/>
         </div>
     );
 }
