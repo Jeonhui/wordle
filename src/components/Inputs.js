@@ -4,6 +4,10 @@ import {send_input} from "../function/send_input";
 import Log from "./Log";
 import styled, {css} from "styled-components";
 import {motion} from "framer-motion";
+import data from "../data/data.json";
+import Key from "./keyboard";
+
+const MAX_COUNT = 10;
 
 const Container = styled.div`
   position: absolute;
@@ -83,13 +87,13 @@ const Next = styled.button`
   }
 `
 
-const InputContainer = styled.div`
+const InputContainer = styled(motion.div)`
   position: absolute;
   bottom: 0;
   width: 100%;
   text-align: center;
   max-height: 30%;
-  ${(props) => props.visible && css`
+  ${(props) => (props.visible !== "") && css`
     display: none;
   `}
 `
@@ -107,6 +111,7 @@ const InputBar = styled.div`
     border-spacing: 10px;
     margin: 0 0 10px 0;
   }
+
 `
 
 const Input = styled(motion.input)`
@@ -147,7 +152,7 @@ const Button = styled.button`
   border: none;
   color: white;
   font-weight: bold;
-  
+
   border-radius: 5px;
   @media all and (max-width: 500px) {
     width: 274px;
@@ -165,63 +170,94 @@ const Button = styled.button`
   }
 `
 
-const answer = "train";
+const Result = styled(motion.div)`
+  position: relative;
+
+  border-radius: 10px;
+  color: black;
+  background-color: white;
+  margin-top: 20px;
+  text-align: center;
+  @media all and (max-width: 500px) {
+    width: 80%;
+    left: 10%;
+  }
+  @media all and (min-width: 500px) {
+    width: 100%;
+  }
+
+  ${(props) => props.res !== "" ? css`display: block;` : css`display: none;`}
+}
+
+`
+
+const ResultTitle = styled.div`
+  padding: 25px 0 10px 0;
+  font-weight: bold;
+  font-size: 25px;
+`
+
+const Res = styled.div`
+  width: 100%;
+  font-size: 25px;
+  text-align: center;
+`
+const R = styled.div`
+  padding-bottom: 15px;
+`
+
+let answer = "none";
 
 export default function Inputs() {
+    const value = useSelector((state) => state)
+    //redux state값 가져오기
+
+    answer = data.data[value.key].word;
+
     const inputRef = [useRef(), useRef(), useRef(), useRef(), useRef()]
     //각 input의 주소 저장하는 배열
 
     const [toggle, setToggle] = useState(false);
     // 변화 감지 state
 
-    const [result, setResult] = useState(false);
+    const [result, setResult] = useState("");
     // 결과를 저장하는 state
 
-    const value = useSelector((state) => state)
-    //redux state값 가져오기
+    const [over, setOver] =  useState("out")
+
 
     const inputChange = (e, i) => {
         if (('a' <= e.nativeEvent.data && e.nativeEvent.data <= 'z') || ('A' <= e.nativeEvent.data && e.nativeEvent.data <= 'Z')) {
             setInputValue({...inputValue, [i]: e.nativeEvent.data})
-            if (i + 1 < 5)
-                inputRef[i + 1]?.current.focus();
+            if (i + 1 < 5) inputRef[i + 1]?.current.focus();
         }
     }//input 변화 감지
 
     useEffect(() => {
     })
 
-    let [inputValue, setInputValue] = useState(
-        {
-            0: "",
-            1: "",
-            2: "",
-            3: "",
-            4: ""
-        }
-    ); //각 input의 값 저장
+    let [inputValue, setInputValue] = useState({
+        0: "", 1: "", 2: "", 3: "", 4: ""
+    }); //각 input의 값 저장
+
 
     const submit = () => {
         if (inputValue[0] !== "" && inputValue[1] !== "" && inputValue[2] !== "" && inputValue[3] !== "" && inputValue[4] !== "") {
             dispatch(send_input(inputValue));
             setToggle(!toggle);
             setInputValue({
-                0: "",
-                1: "",
-                2: "",
-                3: "",
-                4: ""
+                0: "", 1: "", 2: "", 3: "", 4: ""
             });
             if ((inputValue[0] + inputValue[1] + inputValue[2] + inputValue[3] + inputValue[4]).toLowerCase() === answer) {
-                setResult(true);
+                setResult("Success");
                 dispatch({type: "reset"})
                 dispatch(send_input(answer))
 
             } else {
-                if (value.length >= 5) {
-                    alert("실패하였습니다.");
+                if (value.length >= MAX_COUNT) {
+                    setResult("Failed");
                     dispatch({type: "reset"})
-                    setResult(false);
+                    dispatch(send_input(answer))
                 }
             }
         } else {
@@ -233,12 +269,15 @@ export default function Inputs() {
 
     return (
         <Container>
-            <TitleBar><Title>Wordle</Title><Next onClick={() => {
+            <TitleBar><Title onMouseOver={()=>{setOver("over");
+            console.log(over)}} onMouseOut={()=>{setOver("out")}}>Wordle</Title><Next onClick={() => {
                 dispatch({type: "reset"});
-                setResult(false);
+                dispatch({type: "next"})
+                setResult("");
             }}> > </Next></TitleBar>
             <Log/>
-            <InputContainer visible={result}>
+            <InputContainer visible={result} animate={{y: [300, 0]}}
+                            transition={{duration: 1}}>
                 <InputBar>
                     <Input value={inputValue[0]} ref={inputRef[0]} onChange={(e) => {
                         inputChange(e, 0)
@@ -258,6 +297,14 @@ export default function Inputs() {
                 </InputBar>
                 <Button onClick={submit}>submit</Button>
             </InputContainer>
-        </Container>
-    );
+            <Result res={result} animate={{scale: [0, 1]}}
+                    transition={{duration: 1, delay: 3.38}}><ResultTitle>Result</ResultTitle>
+                <Res>
+                    <R>{result}</R>
+                    <R>time : 00:00:00</R>
+                    <R>score : 00000</R>
+                </Res>
+            </Result>
+            <Key over={over}/>
+        </Container>);
 }

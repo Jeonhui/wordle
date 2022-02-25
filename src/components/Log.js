@@ -1,8 +1,9 @@
 import {useSelector} from "react-redux";
 import styled, {css} from "styled-components";
 import {motion} from "framer-motion";
+import data from "../data/data.json";
 
-const answer = "train"
+let answer = "none";
 
 const LogContainer = styled.div`
   overflow: scroll;
@@ -55,10 +56,10 @@ const L = styled(motion.div)`
 
 function Log() {
     const value = useSelector((state) => state)
-
+    answer = data.data[value.key].word;
     return (
         <LogContainer>
-            {(Object.values(value)).map((str, idx) => <LBox key={idx}>{(str.split("")).map((c, i) => <L
+            {(Object.values(value.data)).map((str, idx) => <LBox key={idx}>{(str.split("")).map((c, i) => <L
                 key={i} c={c} i={i} animate={{scale: [0, 1]}}
                 transition={{duration: 1, delay: i/10}}>{c}</L>)}</LBox>)}
         </LogContainer>
