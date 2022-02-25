@@ -1,36 +1,70 @@
-import {useEffect} from "react";
 import {useSelector} from "react-redux";
-import styled from "styled-components";
+import styled, {css} from "styled-components";
+import {useEffect} from "react";
+
+const answer = "train"
+
+const LogContainer = styled.div`
+  overflow: scroll;
+  @media all and (max-width: 500px){
+    height: 60%;
+  }
+  @media all and (min-width: 500px){
+    height: 70%;
+  }
+`
 
 const LBox = styled.div`
   position: relative;
   left: 50%;
   top: 10px;
   transform: translate(-50%);
-  display: table;
   border-spacing: 10px;
+  margin: 0 0 10px 0;
 `
 
 const L = styled.div`
-  display: table-cell;
-  width: 80px;
-  height: 80px;
-  font-size: 50px;
-  border: 1px solid black;
-  border-radius: 10px;
+  display: inline-block;
   vertical-align: middle;
+  
+  @media all and (max-width: 500px){
+    width: 50px;
+    height: 50px;
+    font-size: 30px;
+    margin: 3px;
+  }
 
+  @media all and (min-width: 500px){
+    width: 80px;
+    height: 80px;
+    font-size: 50px;
+    margin: 5px;
+  }
+  
+  
+  ${(props) => {
+    if (props.c === answer[props.i])
+      return css`background-color: rgb(140, 210, 130);
+        box-shadow: inset -3px 3px 3px rgb(130, 180, 120);`
+    else if (answer.indexOf(props.c) !== -1)
+      return css`background-color: rgb(255, 212, 100);
+        box-shadow: inset -3px 3px 3px rgb(255, 190, 20);`
+    else
+      return css`background-color: rgb(255, 141, 141);
+        box-shadow: inset -3px 3px 3px rgb(255, 100, 100);`
+  }
+  }
 `;
 
-
 function Log() {
-
     const value = useSelector((state) => state)
+    useEffect(()=>{console.log("log render")});
 
     return (
-        <div className="App">
-            {(Object.values(value)).map((str, idx)=><LBox key={idx}>{(str.split("")).map((c,i)=><L key={i}>{c}</L>)}</LBox>)}
-        </div>
+        <LogContainer>
+            {(Object.values(value)).map((str, idx) => <LBox key={idx}>{(str.split("")).map((c, i) => <L
+                key={i} c={c} i={i}>{c}</L>)}</LBox>)}
+        </LogContainer>
     );
 }
 

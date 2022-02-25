@@ -6,12 +6,14 @@ import {Provider} from "react-redux";
 import {createStore} from "@reduxjs/toolkit";
 
 const reducer = (state= [], action)=>{
-    if (action.type ==="send_input"){
+    if (action.type ==="send_input") {
         state.push(action.text);
-        console.log(state);
+    }else if(action.type === "reset"){
+        state = []
     }
     return state;
 }
+
 let store = createStore(reducer)
 
 ReactDOM.render(
