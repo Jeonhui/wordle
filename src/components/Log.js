@@ -1,6 +1,6 @@
 import {useSelector} from "react-redux";
 import styled, {css} from "styled-components";
-import {useEffect} from "react";
+import {useRef, useEffect} from "react";
 
 const answer = "train"
 
@@ -58,10 +58,15 @@ const L = styled.div`
 
 function Log() {
     const value = useSelector((state) => state)
-    useEffect(()=>{console.log("log render")});
+
+    const logRef = useRef(null);
+
+    useEffect(()=>{
+        logRef.current.scrollTo(1000);
+    },[])
 
     return (
-        <LogContainer>
+        <LogContainer ref={logRef}>
             {(Object.values(value)).map((str, idx) => <LBox key={idx}>{(str.split("")).map((c, i) => <L
                 key={i} c={c} i={i}>{c}</L>)}</LBox>)}
         </LogContainer>
