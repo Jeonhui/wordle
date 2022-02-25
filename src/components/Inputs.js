@@ -1,8 +1,9 @@
 import {useDispatch, useSelector} from "react-redux";
-import styled,{css} from "styled-components";
 import {useEffect, useRef, useState} from "react";
 import {send_input} from "../function/send_input";
 import Log from "./Log";
+import styled, {css} from "styled-components";
+import {motion} from "framer-motion";
 
 const Container = styled.div`
   position: absolute;
@@ -10,6 +11,7 @@ const Container = styled.div`
   left: 50%;
   transform: translate(-50%);
   text-align: center;
+  color: white;
   @media all and (max-width: 500px) {
     width: 100%;
   }
@@ -107,14 +109,15 @@ const InputBar = styled.div`
   }
 `
 
-const Input = styled.input`
+const Input = styled(motion.input)`
   display: table-cell;
   padding: 0;
   border: none;
   text-align: center;
   vertical-align: middle;
+  color: white;
   background-color: rgb(218, 218, 218);
-
+  border-radius: 5px;
   @media all and (max-width: 500px) {
     width: 50px;
     height: 50px;
@@ -142,19 +145,20 @@ const Button = styled.button`
   padding: 0;
   background-color: rgb(110, 150, 230);
   border: none;
+  color: white;
+  font-weight: bold;
+  
   border-radius: 5px;
-  color: black;
-
   @media all and (max-width: 500px) {
-    width: 250px;
-    height: 25px;
-    font-size: 15px;
+    width: 274px;
+    height: 30px;
+    font-size: 20px;
     margin: 0 0 5px 0;
     box-shadow: inset -2px 2px 2px rgb(80, 120, 170);
   }
   @media all and (min-width: 500px) {
-    width: 400px;
-    height: 30px;
+    width: 440px;
+    height: 40px;
     font-size: 20px;
     margin: 0 0 10px 0;
     box-shadow: inset -3px 3px 3px rgb(80, 120, 170);
@@ -168,10 +172,13 @@ export default function Inputs() {
     //각 input의 주소 저장하는 배열
 
     const [toggle, setToggle] = useState(false);
+    // 변화 감지 state
 
     const [result, setResult] = useState(false);
+    // 결과를 저장하는 state
 
     const value = useSelector((state) => state)
+    //redux state값 가져오기
 
     const inputChange = (e, i) => {
         if (('a' <= e.nativeEvent.data && e.nativeEvent.data <= 'z') || ('A' <= e.nativeEvent.data && e.nativeEvent.data <= 'Z')) {
@@ -206,8 +213,10 @@ export default function Inputs() {
                 4: ""
             });
             if ((inputValue[0] + inputValue[1] + inputValue[2] + inputValue[3] + inputValue[4]).toLowerCase() === answer) {
-                alert("정답입니다.");
                 setResult(true);
+                dispatch({type: "reset"})
+                dispatch(send_input(answer))
+
             } else {
                 if (value.length >= 5) {
                     alert("실패하였습니다.");
