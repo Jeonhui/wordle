@@ -1,5 +1,5 @@
-import {useDispatch} from "react-redux";
-import styled from "styled-components";
+import {useDispatch, useSelector} from "react-redux";
+import styled,{css} from "styled-components";
 import {useEffect, useRef, useState} from "react";
 import {send_input} from "../function/send_input";
 import Log from "./Log";
@@ -42,7 +42,7 @@ const Title = styled.div`
     height: 40px;
     margin: 10px 0 10px 0;
   }
-  
+
   @media all and (min-width: 500px) {
     font-size: 40px;
     height: 50px;
@@ -54,8 +54,8 @@ const Next = styled.button`
   position: absolute;
   transform: translate(-50%);
   display: inline-block;
-  
-  background-color: rgba(0,0,0,0);
+
+  background-color: rgba(0, 0, 0, 0);
   border: none;
   font-weight: bold;
   @media all and (max-width: 500px) {
@@ -71,12 +71,12 @@ const Next = styled.button`
     margin: 10px 0 10px 0;
     right: 0;
   }
-  
-  &:hover{
+
+  &:hover {
     color: dimgray;
   }
-  
-  &:active{
+
+  &:active {
     color: cornflowerblue;
   }
 `
@@ -87,6 +87,9 @@ const InputContainer = styled.div`
   width: 100%;
   text-align: center;
   max-height: 30%;
+  ${(props) => props.visible && css`
+    display: none;
+  `}
 `
 
 const InputBar = styled.div`
@@ -166,8 +169,11 @@ export default function Inputs() {
 
     const [toggle, setToggle] = useState(false);
 
+    const [result, setResult] = useState(false);
+
+    const value = useSelector((state) => state)
+
     const inputChange = (e, i) => {
-        console.log(e.nativeEvent.data)
         if (('a' <= e.nativeEvent.data && e.nativeEvent.data <= 'z') || ('A' <= e.nativeEvent.data && e.nativeEvent.data <= 'Z')) {
             setInputValue({...inputValue, [i]: e.nativeEvent.data})
             if (i + 1 < 5)
@@ -176,8 +182,7 @@ export default function Inputs() {
     }//input 변화 감지
 
     useEffect(() => {
-        console.log(toggle)
-    }, [toggle])
+    })
 
     let [inputValue, setInputValue] = useState(
         {
@@ -202,6 +207,13 @@ export default function Inputs() {
             });
             if ((inputValue[0] + inputValue[1] + inputValue[2] + inputValue[3] + inputValue[4]).toLowerCase() === answer) {
                 alert("정답입니다.");
+                setResult(true);
+            } else {
+                if (value.length >= 5) {
+                    alert("실패하였습니다.");
+                    dispatch({type: "reset"})
+                    setResult(false);
+                }
             }
         } else {
             alert("다섯 글자를 모두 채워주세요");
@@ -212,9 +224,12 @@ export default function Inputs() {
 
     return (
         <Container>
-            <TitleBar><Title>Wrodle</Title><Next onClick={()=>{dispatch({type:"reset"})}}> > </Next></TitleBar>
+            <TitleBar><Title>Wordle</Title><Next onClick={() => {
+                dispatch({type: "reset"});
+                setResult(false);
+            }}> > </Next></TitleBar>
             <Log/>
-            <InputContainer>
+            <InputContainer visible={result}>
                 <InputBar>
                     <Input value={inputValue[0]} ref={inputRef[0]} onChange={(e) => {
                         inputChange(e, 0)
