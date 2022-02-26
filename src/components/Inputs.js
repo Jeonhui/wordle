@@ -5,6 +5,7 @@ import Log from "./Log";
 import styled, {css} from "styled-components";
 import {motion} from "framer-motion";
 import Key from "./keyboard";
+import Info from "./Info";
 
 const MAX_COUNT = 10;
 
@@ -57,23 +58,22 @@ const Title = styled.div`
 
 const Next = styled.button`
   position: absolute;
-  transform: translate(-50%);
+  bottom: 0;
   display: inline-block;
 
   background-color: rgba(0, 0, 0, 0);
   border: none;
   font-weight: bold;
+  color: white;
+  margin-bottom: 10px;
+
   @media all and (max-width: 500px) {
-    font-size: 20px;
-    height: 40px;
-    margin: 10px 0 10px 0;
+    font-size: 15px;
     right: 10px;
   }
 
   @media all and (min-width: 500px) {
-    font-size: 30px;
-    height: 50px;
-    margin: 10px 0 10px 0;
+    font-size: 20px;
     right: 0;
   }
 
@@ -83,6 +83,33 @@ const Next = styled.button`
 
   &:active {
     color: cornflowerblue;
+  }
+`
+
+const Q = styled.div`
+  position: absolute;
+  display: inline-block;
+  font-weight: bold;
+  bottom: 0;
+  border-radius: 20px;
+  border: white 2px solid;
+
+  @media all and (max-width: 500px) {
+    width: 10px;
+    height: 10px;
+    padding: 1.5px 2px 2.5px 2px;
+    font-size: 10px;
+    margin-bottom: 10px;
+    left: 10px;
+  }
+
+  @media all and (min-width: 500px) {
+    width: 15px;
+    height: 15px;
+    padding: 1px 2px 3px 2px;
+    font-size: 15px;
+    margin-bottom: 10px;
+    left: 0;
   }
 `
 
@@ -205,6 +232,7 @@ const R = styled.div`
   padding-bottom: 15px;
 `
 
+
 let answer = "none";
 
 export default function Inputs() {
@@ -222,8 +250,13 @@ export default function Inputs() {
     const [result, setResult] = useState("");
     // 결과를 저장하는 state
 
-    const [over, setOver] = useState("out")
+    const [over, setOver] = useState("out");
+    //title에 마우스가 올라가있는 지 확인하는 state
 
+    const [info, setInfo] = useState("out");
+    //info에 마우스가 올라가있는 지 확인하는 state
+
+    const [count, setCount] = useState(0)
 
     const inputChange = (e, i) => {
         if (('a' <= e.nativeEvent.data && e.nativeEvent.data <= 'z') || ('A' <= e.nativeEvent.data && e.nativeEvent.data <= 'Z')) {
@@ -251,12 +284,11 @@ export default function Inputs() {
                 setResult("Success");
                 dispatch({type: "reset"})
                 dispatch(send_input(answer))
-
             } else {
                 if (value.length >= MAX_COUNT) {
                     setResult("Failed");
-                    dispatch({type: "reset"})
-                    dispatch(send_input(answer))
+                    dispatch({type: "reset"});
+                    dispatch(send_input(answer));
                 }
             }
         } else {
@@ -266,48 +298,54 @@ export default function Inputs() {
 
     const dispatch = useDispatch() //액션 전달
 
-    return (
-        <Container>
-            <TitleBar><Title onMouseOver={() => {
+    return (<Container>
+        <TitleBar>
+            <Q onMouseOver={()=>{setInfo("over")}} onMouseOut={() => {
+                setInfo("out")}}>?</Q>
+            <Title onMouseOver={() => {
                 setOver("over");
-                console.log(over)
             }} onMouseOut={() => {
                 setOver("out")
             }}>Wordle</Title><Next onClick={() => {
-                dispatch({type: "reset"});
-                dispatch({type: "next"})
-                setResult("");
-            }}> > </Next></TitleBar>
-            <Log/>
-            <InputContainer visible={result} animate={{y: [300, 0]}}
-                            transition={{duration: 1}}>
-                <InputBar>
-                    <Input value={inputValue[0]} ref={inputRef[0]} onChange={(e) => {
-                        inputChange(e, 0)
-                    }}/>
-                    <Input value={inputValue[1]} ref={inputRef[1]} onChange={(e) => {
-                        inputChange(e, 1)
-                    }}/>
-                    <Input value={inputValue[2]} ref={inputRef[2]} onChange={(e) => {
-                        inputChange(e, 2)
-                    }}/>
-                    <Input value={inputValue[3]} ref={inputRef[3]} onChange={(e) => {
-                        inputChange(e, 3)
-                    }}/>
-                    <Input value={inputValue[4]} ref={inputRef[4]} onChange={(e) => {
-                        inputChange(e, 4)
-                    }} onKeyPress={(e)=>{if(e.key === "Enter"){submit()}}}/>
-                </InputBar>
-                <Button onClick={submit}>submit</Button>
-            </InputContainer>
-            <Result res={result} animate={{scale: [0, 1]}}
-                    transition={{duration: 1, delay: 3.38}}><ResultTitle>Result</ResultTitle>
-                <Res>
-                    <R>{result}</R>
-                    <R>time : 00:00:00</R>
-                    <R>score : 00000</R>
-                </Res>
-            </Result>
-            <Key over={over}/>
-        </Container>);
+            dispatch({type: "reset"});
+            dispatch({type: "next"})
+            setResult("");
+        }}> NEXT </Next></TitleBar>
+        <Log/>
+        <InputContainer visible={result} animate={{y: [300, 0]}}
+                        transition={{duration: 1}}>
+            <InputBar>
+                <Input value={inputValue[0]} ref={inputRef[0]} onChange={(e) => {
+                    inputChange(e, 0)
+                }}/>
+                <Input value={inputValue[1]} ref={inputRef[1]} onChange={(e) => {
+                    inputChange(e, 1)
+                }}/>
+                <Input value={inputValue[2]} ref={inputRef[2]} onChange={(e) => {
+                    inputChange(e, 2)
+                }}/>
+                <Input value={inputValue[3]} ref={inputRef[3]} onChange={(e) => {
+                    inputChange(e, 3)
+                }}/>
+                <Input value={inputValue[4]} ref={inputRef[4]} onChange={(e) => {
+                    inputChange(e, 4)
+                }} onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                        submit()
+                    }
+                }}/>
+            </InputBar>
+            <Button onClick={submit}>submit</Button>
+        </InputContainer>
+        <Result res={result} animate={{scale: [0, 1]}}
+                transition={{duration: 1, delay: 3.38}}><ResultTitle>Result</ResultTitle>
+            <Res>
+                <R>{result}</R>
+                <R>{count}</R>
+            </Res>
+        </Result>
+
+        <Key over={over}/>
+        <Info over={info}/>
+    </Container>);
 }
