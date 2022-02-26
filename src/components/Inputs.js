@@ -101,7 +101,8 @@ const Q = styled.div`
     padding: 1.5px 2px 2.5px 2px;
     font-size: 10px;
     margin-bottom: 10px;
-    left: 10px;
+    left: 20px;
+    -webkit-appearance: none;
   }
 
   @media all and (min-width: 500px) {
@@ -268,6 +269,10 @@ export default function Inputs() {
     const [mode, setMode] = useState(false);
     const [modeCount, setModeCount] = useState(0);
 
+    const [inputValue, setInputValue] = useState({
+        0: "", 1: "", 2: "", 3: "", 4: ""
+    }); //각 input의 값 저장
+
     const inputChange = (e, i) => {
         if (('a' <= e.nativeEvent.data && e.nativeEvent.data <= 'z') || ('A' <= e.nativeEvent.data && e.nativeEvent.data <= 'Z')) {
             setInputValue({...inputValue, [i]: e.nativeEvent.data})
@@ -275,23 +280,40 @@ export default function Inputs() {
         }
     }//input 변화 감지
 
+    const inputBackspace = (e, i) => {
+        if (inputValue[i] !== ""){
+            setInputValue({
+                ...inputValue,[i]:""
+            });
+        }
+        else{
+            if (i > 0) {
+                inputRef[i - 1]?.current.focus();
+                setInputValue({
+                    ...inputValue,[i-1]:""
+                });
+            }
+        }
+    }
+
     useEffect(() => {
     })
 
-    let [inputValue, setInputValue] = useState({
-        0: "", 1: "", 2: "", 3: "", 4: ""
-    }); //각 input의 값 저장
+
 
 
     const submit = () => {
         if (inputValue[0] !== "" && inputValue[1] !== "" && inputValue[2] !== "" && inputValue[3] !== "" && inputValue[4] !== "") {
             dispatch(send_input(inputValue));
             setToggle(!toggle);
+
             setInputValue({
                 0: "", 1: "", 2: "", 3: "", 4: ""
             });
 
             setCount(count + 1);
+
+            inputRef[0]?.current.focus();
 
             if ((inputValue[0] + inputValue[1] + inputValue[2] + inputValue[3] + inputValue[4]).toLowerCase() === answer) {
                 setResult("Success");
@@ -307,6 +329,12 @@ export default function Inputs() {
             }
         } else {
             alert("다섯 글자를 모두 채워주세요");
+            for(let i=0; i<5;i++){
+                if (inputValue[i] === ""){
+                    inputRef[i]?.current.focus();
+                    break
+                }
+            }
         }
     }//submit 버튼
 
@@ -331,7 +359,6 @@ export default function Inputs() {
                     if(input===true){
                         setMode(!mode)
                     }
-                    console.log(mode);
                 }
             }}>Wordle</Title><Next onClick={() => {
                 dispatch({type: "reset"});
@@ -345,21 +372,47 @@ export default function Inputs() {
         <InputBar>
             <Input value={inputValue[0]} ref={inputRef[0]} onChange={(e) => {
                 inputChange(e, 0)
+            }} onKeyUp={(e) => {
+                if (e.key === "Enter") {
+                    submit()
+                }else if (e.key === "Backspace"){
+                    setInputValue({...inputValue,[0]:""})
+                }
             }}/>
             <Input value={inputValue[1]} ref={inputRef[1]} onChange={(e) => {
                 inputChange(e, 1)
+            }} onKeyUp={(e) => {
+                if (e.key === "Enter") {
+                    submit()
+                }else if (e.key === "Backspace"){
+                    inputBackspace(e, 1)
+                }
             }}/>
             <Input value={inputValue[2]} ref={inputRef[2]} onChange={(e) => {
                 inputChange(e, 2)
+            }} onKeyUp={(e) => {
+                if (e.key === "Enter") {
+                    submit()
+                }else if (e.key === "Backspace"){
+                    inputBackspace(e, 2)
+                }
             }}/>
             <Input value={inputValue[3]} ref={inputRef[3]} onChange={(e) => {
                 inputChange(e, 3)
+            }} onKeyUp={(e) => {
+                if (e.key === "Enter") {
+                    submit()
+                }else if (e.key === "Backspace"){
+                    inputBackspace(e, 3)
+                }
             }}/>
             <Input value={inputValue[4]} ref={inputRef[4]} onChange={(e) => {
                 inputChange(e, 4)
-            }} onKeyPress={(e) => {
+            }} onKeyUp={(e) => {
                 if (e.key === "Enter") {
                     submit()
+                }else if (e.key === "Backspace"){
+                    inputBackspace(e, 4)
                 }
             }}/>
         </InputBar>
