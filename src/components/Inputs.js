@@ -7,7 +7,8 @@ import {motion} from "framer-motion";
 import Key from "./keyboard";
 import Info from "./Info";
 
-const MAX_COUNT = 10;
+const MAX_COUNT = 5;
+const MOD_MAX_COUNT = 10;
 
 const Container = styled.div`
   position: absolute;
@@ -110,6 +111,11 @@ const Q = styled.div`
     font-size: 15px;
     margin-bottom: 10px;
     left: 0;
+  }
+
+  &:hover {
+    color: dimgray;
+    border: dimgray 2px solid;
   }
 `
 
@@ -256,7 +262,11 @@ export default function Inputs() {
     const [info, setInfo] = useState("out");
     //info에 마우스가 올라가있는 지 확인하는 state
 
-    const [count, setCount] = useState(0)
+    const [count, setCount] = useState(0);
+    //submit 횟수세는 state
+
+    const [mode, setMode] = useState(false);
+    const [modeCount, setModeCount] = useState(0);
 
     const inputChange = (e, i) => {
         if (('a' <= e.nativeEvent.data && e.nativeEvent.data <= 'z') || ('A' <= e.nativeEvent.data && e.nativeEvent.data <= 'Z')) {
@@ -280,12 +290,16 @@ export default function Inputs() {
             setInputValue({
                 0: "", 1: "", 2: "", 3: "", 4: ""
             });
+
+            setCount(count + 1);
+
             if ((inputValue[0] + inputValue[1] + inputValue[2] + inputValue[3] + inputValue[4]).toLowerCase() === answer) {
                 setResult("Success");
-                dispatch({type: "reset"})
-                dispatch(send_input(answer))
+                dispatch({type: "reset"});
+                dispatch(send_input(answer));
             } else {
-                if (value.length >= MAX_COUNT) {
+                console.log(value.data.length)
+                if (value.data.length >= ((!mode) ? MAX_COUNT : MOD_MAX_COUNT)) {
                     setResult("Failed");
                     dispatch({type: "reset"});
                     dispatch(send_input(answer));
@@ -300,52 +314,67 @@ export default function Inputs() {
 
     return (<Container>
         <TitleBar>
-            <Q onMouseOver={()=>{setInfo("over")}} onMouseOut={() => {
-                setInfo("out")}}>?</Q>
+            <Q onMouseOver={() => {
+                setInfo("over")
+            }} onMouseOut={() => {
+                setInfo("out")
+            }}>?</Q>
             <Title onMouseOver={() => {
                 setOver("over");
             }} onMouseOut={() => {
                 setOver("out")
-            }}>Wordle</Title><Next onClick={() => {
-            dispatch({type: "reset"});
-            dispatch({type: "next"})
-            setResult("");
-        }}> NEXT </Next></TitleBar>
-        <Log/>
-        <InputContainer visible={result} animate={{y: [300, 0]}}
-                        transition={{duration: 1}}>
-            <InputBar>
-                <Input value={inputValue[0]} ref={inputRef[0]} onChange={(e) => {
-                    inputChange(e, 0)
-                }}/>
-                <Input value={inputValue[1]} ref={inputRef[1]} onChange={(e) => {
-                    inputChange(e, 1)
-                }}/>
-                <Input value={inputValue[2]} ref={inputRef[2]} onChange={(e) => {
-                    inputChange(e, 2)
-                }}/>
-                <Input value={inputValue[3]} ref={inputRef[3]} onChange={(e) => {
-                    inputChange(e, 3)
-                }}/>
-                <Input value={inputValue[4]} ref={inputRef[4]} onChange={(e) => {
-                    inputChange(e, 4)
-                }} onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                        submit()
+            }} onClick={() => {
+                setModeCount(modeCount + 1);
+                if (modeCount > 4) {
+                    setModeCount(0);
+                    let input = window.confirm("모드 사용"+(mode?"해제":""));
+                    if(input===true){
+                        setMode(!mode)
                     }
-                }}/>
-            </InputBar>
-            <Button onClick={submit}>submit</Button>
-        </InputContainer>
-        <Result res={result} animate={{scale: [0, 1]}}
-                transition={{duration: 1, delay: 3.38}}><ResultTitle>Result</ResultTitle>
-            <Res>
-                <R>{result}</R>
-                <R>{count}</R>
-            </Res>
-        </Result>
+                    console.log(mode);
+                }
+            }}>Wordle</Title><Next onClick={() => {
+                dispatch({type: "reset"});
+                dispatch({type: "next"})
+                setResult("");
+                setCount(0);
+            }}> NEXT </Next></TitleBar>
+    <Log/>
+    <InputContainer visible={result} animate={{y: [300, 0]}}
+                    transition={{duration: 1}}>
+        <InputBar>
+            <Input value={inputValue[0]} ref={inputRef[0]} onChange={(e) => {
+                inputChange(e, 0)
+            }}/>
+            <Input value={inputValue[1]} ref={inputRef[1]} onChange={(e) => {
+                inputChange(e, 1)
+            }}/>
+            <Input value={inputValue[2]} ref={inputRef[2]} onChange={(e) => {
+                inputChange(e, 2)
+            }}/>
+            <Input value={inputValue[3]} ref={inputRef[3]} onChange={(e) => {
+                inputChange(e, 3)
+            }}/>
+            <Input value={inputValue[4]} ref={inputRef[4]} onChange={(e) => {
+                inputChange(e, 4)
+            }} onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                    submit()
+                }
+            }}/>
+        </InputBar>
+        <Button onClick={submit}>submit</Button>
+    </InputContainer>
+    <Result res={result} animate={{scale: [0, 1]}}
+            transition={{duration: 1, delay: 3.38}}><ResultTitle>Result</ResultTitle>
+        <Res>
+            <R>{result}</R>
+            <R>Try : {count}</R>
+        </Res>
+    </Result>
 
-        <Key over={over}/>
-        <Info over={info}/>
-    </Container>);
+    <Key over={over}/>
+    <Info over={info}/>
+</Container>)
+    ;
 }
