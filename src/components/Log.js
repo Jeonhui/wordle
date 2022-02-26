@@ -1,6 +1,7 @@
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import styled, {css} from "styled-components";
 import {motion} from "framer-motion";
+
 
 let answer = "none";
 
@@ -55,7 +56,9 @@ const L = styled(motion.div)`
 
 function Log() {
     const value = useSelector((state) => state)
+
     answer = value.key;
+
     return (
         <LogContainer>
             {(Object.values(value.data)).map((str, idx) => <LBox key={idx}>{(str.split("")).map((c, i) => <L

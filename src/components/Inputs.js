@@ -220,9 +220,7 @@ const Result = styled(motion.div)`
   }
 
   ${(props) => props.res !== "" ? css`display: block;` : css`display: none;`}
-}
-
-`
+}`
 
 const ResultTitle = styled.div`
   padding: 25px 0 10px 0;
@@ -235,10 +233,10 @@ const Res = styled.div`
   font-size: 25px;
   text-align: center;
 `
+
 const R = styled.div`
   padding-bottom: 15px;
 `
-
 
 let answer = "none";
 
@@ -247,6 +245,7 @@ export default function Inputs() {
     //redux state값 가져오기
 
     answer = value.key;
+    console.log(answer)
 
     const inputRef = [useRef(), useRef(), useRef(), useRef(), useRef()];
     //각 input의 주소 저장하는 배열
@@ -268,6 +267,7 @@ export default function Inputs() {
 
     const [mode, setMode] = useState(false);
     const [modeCount, setModeCount] = useState(0);
+    //모드 설정을 위한 state
 
     const [inputValue, setInputValue] = useState({
         0: "", 1: "", 2: "", 3: "", 4: ""
@@ -281,46 +281,62 @@ export default function Inputs() {
     }//input 변화 감지
 
     const inputBackspace = (e, i) => {
-        if (inputValue[i] !== ""){
+        if (inputValue[i] !== "") {
             setInputValue({
-                ...inputValue,[i]:""
+                ...inputValue, [i]: ""
             });
-        }
-        else{
+        } else {
             if (i > 0) {
                 inputRef[i - 1]?.current.focus();
                 setInputValue({
-                    ...inputValue,[i-1]:""
+                    ...inputValue, [i - 1]: ""
                 });
             }
         }
-    }
+    }//input에 backspace를 눌렀을 때
 
     useEffect(() => {
     })
 
+    const dispatch = useDispatch() //액션 전달
 
+    const drawResult = () => {
+        let r = ""
+        for (let i = 0; i < 5; i++) {
+            if (inputValue[i] === answer[i]) {
+                r += "🟩"
+            } else if (answer.indexOf(inputValue[i]) !== -1) {
+                r += "🟨"
+            } else {
+                r += "🟥"
+            }
+        }
 
+        dispatch({
+            type: "push_Log",
+            text: r + "\n"
+        })
+    }
 
     const submit = () => {
         if (inputValue[0] !== "" && inputValue[1] !== "" && inputValue[2] !== "" && inputValue[3] !== "" && inputValue[4] !== "") {
             dispatch(send_input(inputValue));
             setToggle(!toggle);
+            drawResult();
 
             setInputValue({
                 0: "", 1: "", 2: "", 3: "", 4: ""
             });
 
             setCount(count + 1);
-
             inputRef[0]?.current.focus();
+
 
             if ((inputValue[0] + inputValue[1] + inputValue[2] + inputValue[3] + inputValue[4]).toLowerCase() === answer) {
                 setResult("Success");
                 dispatch({type: "reset"});
                 dispatch(send_input(answer));
             } else {
-                console.log(value.data.length)
                 if (value.data.length >= ((!mode) ? MAX_COUNT : MOD_MAX_COUNT)) {
                     setResult("Failed");
                     dispatch({type: "reset"});
@@ -329,16 +345,14 @@ export default function Inputs() {
             }
         } else {
             alert("다섯 글자를 모두 채워주세요");
-            for(let i=0; i<5;i++){
-                if (inputValue[i] === ""){
+            for (let i = 0; i < 5; i++) {
+                if (inputValue[i] === "") {
                     inputRef[i]?.current.focus();
                     break
                 }
             }
         }
     }//submit 버튼
-
-    const dispatch = useDispatch() //액션 전달
 
     return (<Container>
         <TitleBar>
@@ -355,79 +369,80 @@ export default function Inputs() {
                 setModeCount(modeCount + 1);
                 if (modeCount > 4) {
                     setModeCount(0);
-                    let input = window.confirm("모드 사용"+(mode?"해제":""));
-                    if(input===true){
+                    let input = window.confirm("모드 사용" + (mode ? "해제" : ""));
+                    if (input === true) {
                         setMode(!mode)
                     }
                 }
             }}>Wordle</Title><Next onClick={() => {
-                dispatch({type: "reset"});
-                dispatch({type: "next"})
-                setResult("");
-                setCount(0);
-            }}> NEXT </Next></TitleBar>
-    <Log/>
-    <InputContainer visible={result} animate={{y: [300, 0]}}
-                    transition={{duration: 1}}>
-        <InputBar>
-            <Input value={inputValue[0]} ref={inputRef[0]} onChange={(e) => {
-                inputChange(e, 0)
-            }} onKeyUp={(e) => {
-                if (e.key === "Enter") {
-                    submit()
-                }else if (e.key === "Backspace"){
-                    setInputValue({...inputValue,[0]:""})
-                }
-            }}/>
-            <Input value={inputValue[1]} ref={inputRef[1]} onChange={(e) => {
-                inputChange(e, 1)
-            }} onKeyUp={(e) => {
-                if (e.key === "Enter") {
-                    submit()
-                }else if (e.key === "Backspace"){
-                    inputBackspace(e, 1)
-                }
-            }}/>
-            <Input value={inputValue[2]} ref={inputRef[2]} onChange={(e) => {
-                inputChange(e, 2)
-            }} onKeyUp={(e) => {
-                if (e.key === "Enter") {
-                    submit()
-                }else if (e.key === "Backspace"){
-                    inputBackspace(e, 2)
-                }
-            }}/>
-            <Input value={inputValue[3]} ref={inputRef[3]} onChange={(e) => {
-                inputChange(e, 3)
-            }} onKeyUp={(e) => {
-                if (e.key === "Enter") {
-                    submit()
-                }else if (e.key === "Backspace"){
-                    inputBackspace(e, 3)
-                }
-            }}/>
-            <Input value={inputValue[4]} ref={inputRef[4]} onChange={(e) => {
-                inputChange(e, 4)
-            }} onKeyUp={(e) => {
-                if (e.key === "Enter") {
-                    submit()
-                }else if (e.key === "Backspace"){
-                    inputBackspace(e, 4)
-                }
-            }}/>
-        </InputBar>
-        <Button onClick={submit}>submit</Button>
-    </InputContainer>
-    <Result res={result} animate={{scale: [0, 1]}}
-            transition={{duration: 1, delay: 3.38}}><ResultTitle>Result</ResultTitle>
-        <Res>
-            <R>{result}</R>
-            <R>Try : {count}</R>
-        </Res>
-    </Result>
+            dispatch({type: "reset"});
+            dispatch({type: "next"})
+            setResult("");
+            setCount(0);
+        }}> NEXT </Next></TitleBar>
+        <Log/>
+        <InputContainer visible={result} animate={{y: [300, 0]}}
+                        transition={{duration: 1}}>
+            <InputBar>
+                <Input value={inputValue[0]} ref={inputRef[0]} onChange={(e) => {
+                    inputChange(e, 0)
+                }} onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                        submit()
+                    } else if (e.key === "Backspace") {
+                        setInputValue({...inputValue, [0]: ""})
+                    }
+                }}/>
+                <Input value={inputValue[1]} ref={inputRef[1]} onChange={(e) => {
+                    inputChange(e, 1)
+                }} onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                        submit()
+                    } else if (e.key === "Backspace") {
+                        inputBackspace(e, 1)
+                    }
+                }}/>
+                <Input value={inputValue[2]} ref={inputRef[2]} onChange={(e) => {
+                    inputChange(e, 2)
+                }} onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                        submit()
+                    } else if (e.key === "Backspace") {
+                        inputBackspace(e, 2)
+                    }
+                }}/>
+                <Input value={inputValue[3]} ref={inputRef[3]} onChange={(e) => {
+                    inputChange(e, 3)
+                }} onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                        submit()
+                    } else if (e.key === "Backspace") {
+                        inputBackspace(e, 3)
+                    }
+                }}/>
+                <Input value={inputValue[4]} ref={inputRef[4]} onChange={(e) => {
+                    inputChange(e, 4)
+                }} onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                        submit()
+                    } else if (e.key === "Backspace") {
+                        inputBackspace(e, 4)
+                    }
+                }}/>
+            </InputBar>
+            <Button onClick={submit}>submit</Button>
+        </InputContainer>
+        <Result res={result} animate={{scale: [0, 1]}}
+                transition={{duration: 1, delay: 3.38}}><ResultTitle>Result</ResultTitle>
+            <Res>
+                <R>{result}</R>
+                <R>Try : {count}</R>
+                <R><pre><R>Record</R>{value.log}</pre></R>
+            </Res>
+        </Result>
 
-    <Key over={over}/>
-    <Info over={info}/>
-</Container>)
-    ;
+        <Key over={over}/>
+        <Info over={info}/>
+    </Container>)
+        ;
 }
