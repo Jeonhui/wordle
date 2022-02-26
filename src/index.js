@@ -6,15 +6,30 @@ import {Provider} from "react-redux";
 import {createStore} from "@reduxjs/toolkit";
 import data from "./data/data.json";
 
-const JSON_DATA = data.data.length;
-
-const reducer = (state = {key: Math.floor(Math.random() * JSON_DATA), data: []}, action) => {
+const reducer = (state = {
+    key: data.data[Math.floor(Math.random() * data.data.length)].word,
+    data: [],
+    status: {correct: new Set(), wrong: new Set(), notInclude: new Set()}
+}, action) => {
     if (action.type === "send_input") {
         state.data.push(action.text);
+        for (let i = 0; i < 5; i++) {
+            if (state.key[i]===action.text[i])
+                state.status.correct.add(action.text[i]);
+            else if (state.key.indexOf(action.text[i]) !== -1){
+                state.status.wrong.add(action.text[i]);
+            }else{
+                state.status.notInclude.add(action.text[i]);
+            }
+        }
     } else if (action.type === "reset") {
-        state = {key: state.key, data: []}
+        state = {key: state.key, data: [], status: {correct: new Set(), wrong: new Set(), notInclude: new Set()}}
     } else if (action.type === "next") {
-        state = {key: Math.floor(Math.random() * JSON_DATA), data: []}
+        state = {
+            key: data.data[Math.floor(Math.random() * data.data.length)].word,
+            data: [],
+            status: {correct: new Set(), wrong: new Set(), notInclude: new Set()}
+        }
     }
     return state;
 }

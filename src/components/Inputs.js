@@ -4,7 +4,6 @@ import {send_input} from "../function/send_input";
 import Log from "./Log";
 import styled, {css} from "styled-components";
 import {motion} from "framer-motion";
-import data from "../data/data.json";
 import Key from "./keyboard";
 
 const MAX_COUNT = 10;
@@ -209,12 +208,12 @@ const R = styled.div`
 let answer = "none";
 
 export default function Inputs() {
-    const value = useSelector((state) => state)
+    const value = useSelector((state) => state);
     //redux state값 가져오기
 
-    answer = data.data[value.key].word;
+    answer = value.key;
 
-    const inputRef = [useRef(), useRef(), useRef(), useRef(), useRef()]
+    const inputRef = [useRef(), useRef(), useRef(), useRef(), useRef()];
     //각 input의 주소 저장하는 배열
 
     const [toggle, setToggle] = useState(false);
@@ -223,7 +222,7 @@ export default function Inputs() {
     const [result, setResult] = useState("");
     // 결과를 저장하는 state
 
-    const [over, setOver] =  useState("out")
+    const [over, setOver] = useState("out")
 
 
     const inputChange = (e, i) => {
@@ -269,8 +268,12 @@ export default function Inputs() {
 
     return (
         <Container>
-            <TitleBar><Title onMouseOver={()=>{setOver("over");
-            console.log(over)}} onMouseOut={()=>{setOver("out")}}>Wordle</Title><Next onClick={() => {
+            <TitleBar><Title onMouseOver={() => {
+                setOver("over");
+                console.log(over)
+            }} onMouseOut={() => {
+                setOver("out")
+            }}>Wordle</Title><Next onClick={() => {
                 dispatch({type: "reset"});
                 dispatch({type: "next"})
                 setResult("");
@@ -293,7 +296,7 @@ export default function Inputs() {
                     }}/>
                     <Input value={inputValue[4]} ref={inputRef[4]} onChange={(e) => {
                         inputChange(e, 4)
-                    }}/>
+                    }} onKeyPress={(e)=>{if(e.key === "Enter"){submit()}}}/>
                 </InputBar>
                 <Button onClick={submit}>submit</Button>
             </InputContainer>

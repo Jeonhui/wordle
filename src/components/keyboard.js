@@ -1,14 +1,12 @@
 import {useSelector} from "react-redux";
 import styled, {css} from "styled-components";
-import data from "../data/data.json";
 
-let answer = "none";
 
 const KeyContainer = styled.div`
   position: absolute;
   top: 20%;
   left: 50%;
-  transform: translate(-50%,0);
+  transform: translate(-50%, 0);
   width: 200px;
   height: 265px;
   background-color: white;
@@ -29,21 +27,29 @@ const S = styled.span`
   margin: 5px;
   border-radius: 5px;
   background-color: dimgray;
+  ${(props) => {
+    if (Array.from(props.division.correct).includes(props.c))
+      return css`background-color: rgb(140, 210, 130);`
+    else if (Array.from(props.division.wrong).includes(props.c))
+      return css`background-color: rgb(255, 212, 100);`
+    else if (Array.from(props.division.notInclude).includes(props.c))
+      return css`background-color: white;`
+
+  }
+  }
 `
 
-//let str = [...new Set(props.input.join(""))].join('')
+
 
 
 function Key(props) {
     const value = useSelector((state) => state)
-    answer = data.data[value.key].word;
-    console.log(props.over)
 
-    const alpha = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    const alpha = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 
     return (
         <KeyContainer over={props.over}>
-            {alpha.map((c, i) => <S key={i}>{c} </S>)}
+            {alpha.map((c, i) => <S key={i} division={value.status} c={c}>{c}</S>)}
         </KeyContainer>
     );
 }
