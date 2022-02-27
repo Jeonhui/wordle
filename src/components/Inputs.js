@@ -245,7 +245,7 @@ export default function Inputs() {
     //redux state값 가져오기
 
     answer = value.key;
-    console.log(answer)
+    console.log(answer);
 
     const inputRef = [useRef(), useRef(), useRef(), useRef(), useRef()];
     //각 input의 주소 저장하는 배열
@@ -304,11 +304,11 @@ export default function Inputs() {
         let r = ""
         for (let i = 0; i < 5; i++) {
             if (inputValue[i] === answer[i]) {
-                r += "🟩"
+                r += " 🟩"
             } else if (answer.indexOf(inputValue[i]) !== -1) {
-                r += "🟨"
+                r += " 🟨"
             } else {
-                r += "🟥"
+                r += " 🟥"
             }
         }
 
@@ -437,7 +437,7 @@ export default function Inputs() {
             <Res>
                 <R>{result}</R>
                 <R>Try : {count}</R>
-                <R><pre><R>Record</R>{value.log}</pre></R>
+                <R><pre>Record<br/>{value.log}</pre></R>
             </Res>
         </Result>
 
