@@ -1,14 +1,14 @@
 Wordle
  =============
  ### Trendy games from different countries
- wordle [Link](https://jeonhui.github.io/wordle)
- Trendy games from different countries
+  
  -------------
  wordleLink : <https://jeonhui.github.io/wordle>
 
  I made this website with React, Framer-motion and redux.
   
-### You have to find the correct five-letter word.
+### Game rules
+##### You have to find the correct five-letter word.
  1. Input five letters in the input box at the bottom.
     (You can only input from a to z regardless of case.)
  2. Press the "Enter" key in keyboard Or  Clicked the "submit" button.
