@@ -1,14 +1,10 @@
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import styled, {css} from "styled-components";
 import {motion} from "framer-motion";
+import {forwardRef} from "react";
 
 
 let answer = "none";
-
-const LogContainer = styled.div`
-  overflow: scroll;
-  max-height: 60%;
-`
 
 const LBox = styled.div`
   position: relative;
@@ -17,7 +13,9 @@ const LBox = styled.div`
   top: 10px;
   transform: translate(-50%);
   border-spacing: 10px;
+  margin: 0;
 `
+
 
 const L = styled(motion.div)`
   display: table-cell;
@@ -54,18 +52,40 @@ const L = styled(motion.div)`
   }
 `;
 
-function Log() {
+const Empty = styled(L)`
+  position: relative;
+  background-color: rgba(0, 0, 0, 0);
+  @media all and (max-width: 500px) {
+    width: 50px;
+    height: 50px;
+    font-size: 30px;
+    margin: 0 3px;
+    box-shadow: none;
+  }
+
+  @media all and (min-width: 500px) {
+    width: 80px;
+    height: 80px;
+    font-size: 50px;
+    margin: 5px;
+    box-shadow: none;
+  }
+`
+
+
+const Log = forwardRef((prps, ref) => {
     const value = useSelector((state) => state)
 
     answer = value.key;
 
     return (
-        <LogContainer>
+        <div style={{overflow: 'scroll', maxHeight: '60%', scrollBehavior: "smooth"}} ref={ref}>
             {(Object.values(value.data)).map((str, idx) => <LBox key={idx}>{(str.split("")).map((c, i) => <L
                 key={i} c={c} i={i} animate={{scale: [0, 1]}}
-                transition={{duration: 1, delay: i/10}}>{c}</L>)}</LBox>)}
-        </LogContainer>
+                transition={{duration: 1, delay: i / 10}}>{c}</L>)}</LBox>)}
+            <LBox><Empty/><Empty/><Empty/><Empty/><Empty/></LBox>
+        </div>
     );
-}
+})
 
 export default Log;

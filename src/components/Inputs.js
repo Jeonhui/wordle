@@ -1,5 +1,5 @@
 import {useDispatch, useSelector} from "react-redux";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, createRef, useRef, useState} from "react";
 import {send_input} from "../function/send_input";
 import Log from "./Log";
 import styled, {css} from "styled-components";
@@ -30,6 +30,7 @@ const TitleBar = styled.div`
   width: 100%;
   height: 10%;
   max-height: 10%;
+  overflow: visible;
   @media all and (max-width: 500px) {
     height: 60px;
   }
@@ -93,7 +94,7 @@ const Q = styled.div`
   font-weight: bold;
   bottom: 0;
   border-radius: 20px;
-  border: white 2px solid;
+
 
   @media all and (max-width: 500px) {
     width: 10px;
@@ -103,6 +104,7 @@ const Q = styled.div`
     margin-bottom: 10px;
     left: 20px;
     -webkit-appearance: none;
+    border: white 1px solid;
   }
 
   @media all and (min-width: 500px) {
@@ -112,6 +114,7 @@ const Q = styled.div`
     font-size: 15px;
     margin-bottom: 10px;
     left: 0;
+    border: white 2px solid;
   }
 
   &:hover {
@@ -244,11 +247,13 @@ export default function Inputs() {
     const value = useSelector((state) => state);
     //redux state값 가져오기
 
+
     answer = value.key;
-    console.log(answer);
 
     const inputRef = [useRef(), useRef(), useRef(), useRef(), useRef()];
     //각 input의 주소 저장하는 배열
+
+    const logRef = createRef();
 
     const [toggle, setToggle] = useState(false);
     // 변화 감지 state
@@ -336,6 +341,7 @@ export default function Inputs() {
                 setResult("Success");
                 dispatch({type: "reset"});
                 dispatch(send_input(answer));
+
             } else {
                 if (value.data.length >= ((!mode) ? MAX_COUNT : MOD_MAX_COUNT)) {
                     setResult("Failed");
@@ -343,6 +349,7 @@ export default function Inputs() {
                     dispatch(send_input(answer));
                 }
             }
+
         } else {
             alert("다섯 글자를 모두 채워주세요");
             for (let i = 0; i < 5; i++) {
@@ -351,6 +358,9 @@ export default function Inputs() {
                     break
                 }
             }
+        }
+        if (logRef.current) {
+            logRef.current.scrollTop = logRef.current.scrollHeight
         }
     }//submit 버튼
 
@@ -380,7 +390,7 @@ export default function Inputs() {
             setResult("");
             setCount(0);
         }}> NEXT </Next></TitleBar>
-        <Log/>
+        <Log ref={logRef}/>
         <InputContainer visible={result} animate={{y: [300, 0]}}
                         transition={{duration: 1}}>
             <InputBar>
@@ -437,12 +447,13 @@ export default function Inputs() {
             <Res>
                 <R>{result}</R>
                 <R>Try : {count}</R>
-                <R><pre>Record<br/>{value.log}</pre></R>
+                <R>
+                    <pre>Record<br/>{value.log}</pre>
+                </R>
             </Res>
         </Result>
 
         <Key over={over}/>
         <Info over={info}/>
-    </Container>)
-        ;
+    </Container>);
 }
