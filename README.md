@@ -7,8 +7,8 @@ Wordle
 
  I made this website with React, Framer-motion and redux.
   
-### Game rules
-##### You have to find the correct five-letter word.
+### Game rules  
+You have to find the correct five-letter word.
  1. Input five letters in the input box at the bottom.
     (You can only input from a to z regardless of case.)
  2. Press the "Enter" key in keyboard Or  Clicked the "submit" button.
