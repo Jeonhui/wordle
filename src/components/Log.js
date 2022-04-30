@@ -1,7 +1,7 @@
 import {useSelector} from "react-redux";
 import styled, {css} from "styled-components";
 import {motion} from "framer-motion";
-import {forwardRef} from "react";
+import {forwardRef, useEffect} from "react";
 
 
 let answer = "none";
@@ -73,8 +73,8 @@ const Empty = styled(L)`
 `
 
 
-const Log = forwardRef((prps, ref) => {
-    const value = useSelector((state) => state)
+const Log = forwardRef((props, ref) => {
+    const value = useSelector((state) => state);
 
     answer = value.key;
 
@@ -83,7 +83,8 @@ const Log = forwardRef((prps, ref) => {
             {(Object.values(value.data)).map((str, idx) => <LBox key={idx}>{(str.split("")).map((c, i) => <L
                 key={i} c={c} i={i} animate={{scale: [0, 1]}}
                 transition={{duration: 1, delay: i / 10}}>{c}</L>)}</LBox>)}
-            <LBox><Empty/><Empty/><Empty/><Empty/><Empty/></LBox>
+            {props.res !== "Success" && props.res !== "Failed" ?
+                <LBox><Empty/><Empty/><Empty/><Empty/><Empty/></LBox> : ""}
         </div>
     );
 })

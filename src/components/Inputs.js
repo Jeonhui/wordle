@@ -390,7 +390,7 @@ export default function Inputs() {
             setResult("");
             setCount(0);
         }}> NEXT </Next></TitleBar>
-        <Log ref={logRef}/>
+        <Log res={result} ref={logRef}/>
         <InputContainer visible={result} animate={{y: [300, 0]}}
                         transition={{duration: 1}}>
             <InputBar>
