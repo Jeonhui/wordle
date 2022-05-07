@@ -23,7 +23,7 @@ You have to find the correct five-letter word.
    * The character isn't included in answer.
  4. Guess correct word  
 
- tips.
+ ### tips.
  1. If you raise the cursor on the '?' button, you can see the guide.
  2. If you raise the cursor on the 'wordle' title, you can see the current situation.
  3. If you click the 'Next' button, The problem goes to the next word.
