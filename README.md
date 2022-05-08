@@ -1,5 +1,5 @@
-# Wordle
- =============
+Wordle 
+=============
  ### Trendy games from different countries
   
  -------------
