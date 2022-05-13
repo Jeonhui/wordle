@@ -72,6 +72,15 @@ const Empty = styled(L)`
   }
 `
 
+const LogContainer = styled.div`
+  max-height: 60%;
+  scroll-behavior: smooth;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`
+
 
 const Log = forwardRef((props, ref) => {
     const value = useSelector((state) => state);
@@ -79,19 +88,17 @@ const Log = forwardRef((props, ref) => {
     answer = value.key;
 
     const logStyle = {
-        overflow: (props.res !== "Success" && props.res !== "Failed" ? 'scroll' : 'visible'),
-        maxHeight: '60%',
-        scrollBehavior: "smooth"
+        overflowY: (props.res !== "Success" && props.res !== "Failed" ? 'scroll' : 'visible'),
     }
 
     return (
-        <div style={logStyle} ref={ref}>
+        <LogContainer style={logStyle} ref={ref}>
             {(Object.values(value.data)).map((str, idx) => <LBox key={idx}>{(str.split("")).map((c, i) => <L
                 key={i} c={c} i={i} animate={{scale: [0, 1]}}
                 transition={{duration: 1, delay: i / 10}}>{c}</L>)}</LBox>)}
             {props.res !== "Success" && props.res !== "Failed" ?
                 <LBox><Empty/><Empty/><Empty/><Empty/><Empty/></LBox> : ""}
-        </div>
+        </LogContainer>
     );
 })
 
